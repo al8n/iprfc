@@ -25,11 +25,14 @@ const IPV6_5: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0x2001, 0x10, 0, 0, 0,
 /// fe80::/10
 const IPV6_6: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0xfe80, 0, 0, 0, 0, 0, 0, 0), 10);
 
+/// The id of the [`FORWARDING_BLACKLIST`] RFC.
+pub const FORWARDING_BLACKLIST_ID: u32 = u32::MAX;
+
 /// Pseudo-RFC: Blacklist of non-forwardable IP blocks taken from [RFC 6890]
 ///
 /// [RFC 6890]: https://datatracker.ietf.org/doc/rfc6890/
-pub const FORWARDING_BLACK_LIST: RFC = RFC {
-  id: 4294967295,
+pub const FORWARDING_BLACKLIST: RFC = RFC {
+  id: FORWARDING_BLACKLIST_ID,
   ip_nets: &[
     IpNet::V4(IPV4_1),
     IpNet::V4(IPV4_2),
@@ -70,7 +73,7 @@ fn t() {
   .enumerate()
   {
     let addr: Ipv4Net = s.parse().unwrap();
-    assert_eq!(FORWARDING_BLACK_LIST.ipv4_nets[idx], addr);
+    assert_eq!(FORWARDING_BLACKLIST.ipv4_nets[idx], addr);
   }
 
   for (idx, s) in [
@@ -85,6 +88,6 @@ fn t() {
   .enumerate()
   {
     let addr: Ipv6Net = s.parse().unwrap();
-    assert_eq!(FORWARDING_BLACK_LIST.ipv6_nets[idx], addr);
+    assert_eq!(FORWARDING_BLACKLIST.ipv6_nets[idx], addr);
   }
 }

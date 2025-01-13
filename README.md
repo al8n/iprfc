@@ -21,7 +21,7 @@ Known RFCs for IP addresses.
 
 ```toml
 [dependencies]
-iprfc = "0.1"
+iprfc = "0.2"
 ```
 
 ## Pedigree
