@@ -10,7 +10,8 @@ license = "MIT OR Apache-2.0"
 rust-version = "1.56.0"
 
 [features]
-default = []
+default = ["std"]
+std = ["ipnet/default"]
 serde = ["dep:serde", "ipnet/serde"]
 
 [dependencies]

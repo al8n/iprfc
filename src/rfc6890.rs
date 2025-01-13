@@ -154,7 +154,7 @@ const IPV6_9: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0xfe80, 0, 0, 0, 0, 0,
 ///   | `240.0.0.0/4` | Reserved | [RFC 1112], Section 4 | August 1989 | N/A | false | false | false | false | true |
 ///   | `255.255.255.255/32` | Limited Broadcast | [RFC 919], Section 7 | October 1984 | N/A | false | true | false | false | false |
 /// 
-///   ¹ Several protocols have been granted exceptions to this rule. For examples, see [RFC4379] and [RFC5884].
+///   ¹ Several protocols have been granted exceptions to this rule. For examples, see [RFC 4379] and [RFC 5884].
 /// 
 ///   ² Not usable unless by virtue of a more specific reservation.
 /// 
@@ -193,10 +193,12 @@ const IPV6_9: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0xfe80, 0, 0, 0, 0, 0,
 /// [RFC 3927]: https://datatracker.ietf.org/doc/rfc3927/
 /// [RFC 4193]: https://datatracker.ietf.org/doc/rfc4193/
 /// [RFC 4291]: https://datatracker.ietf.org/doc/rfc4291/
+/// [RFC 4379]: https://datatracker.ietf.org/doc/rfc4379/
 /// [RFC 4380]: https://datatracker.ietf.org/doc/rfc4380/
 /// [RFC 4843]: https://datatracker.ietf.org/doc/rfc4843/
 /// [RFC 5180]: https://datatracker.ietf.org/doc/rfc5180/
 /// [RFC 5737]: https://datatracker.ietf.org/doc/rfc5737/
+/// [RFC 5884]: https://datatracker.ietf.org/doc/rfc5884/
 /// [RFC 6052]: https://datatracker.ietf.org/doc/rfc6052/
 /// [RFC 6333]: https://datatracker.ietf.org/doc/rfc6333/
 /// [RFC 6598]: https://datatracker.ietf.org/doc/rfc6666/
