@@ -34,6 +34,7 @@ macro_rules! rfcs {
       /// * https://www.iana.org/assignments/ipv6-address-space/ipv6-address-space.xhtml
       /// * https://www.iana.org/assignments/ipv6-unicast-address-assignments/ipv6-unicast-address-assignments.xhtml
       /// * https://www.iana.org/assignments/ipv6-address-space/ipv6-address-space.xhtml
+      #[allow(rustdoc::bare_urls)]
       pub const RFCS: &[RFC] = &[
         $([<RFC $id>]),+,
         FORWARDING_BLACK_LIST
