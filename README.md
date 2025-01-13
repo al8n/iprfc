@@ -1,9 +1,9 @@
 <div align="center">
-<h1>iprfc</h1>
+<h1>IP RFC</h1>
 </div>
 <div align="center">
 
-A template for creating Rust open-source GitHub repo.
+Known RFCs for IP addresses.
 
 [<img alt="github" src="https://img.shields.io/badge/github-al8n/iprfc-8da0cb?style=for-the-badge&logo=Github" height="22">][Github-url]
 <img alt="LoC" src="https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fal8n%2F327b2a8aef9003246e45c6e47fe63937%2Fraw%2Fiprfc" height="22">
@@ -26,8 +26,9 @@ English | [简体中文][zh-cn-url]
 iprfc = "0.1"
 ```
 
-## Features
-- [x] Create a Rust open-source repo fast 
+## Pedigree
+
+- [HashiCorp's go-sockaddr `rfc.go`](https://github.com/hashicorp/go-sockaddr/blob/master/rfc.go)
 
 #### License
 

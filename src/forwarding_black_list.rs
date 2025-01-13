@@ -30,7 +30,7 @@ const IPV6_6: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0xfe80, 0, 0, 0, 0, 0,
 /// [RFC 6890]: https://datatracker.ietf.org/doc/rfc6890/
 pub const FORWARDING_BLACK_LIST: RFC = RFC {
   id: 4294967295,
-  ip_addresses: &[
+  ip_nets: &[
     IpNet::V4(IPV4_1),
     IpNet::V4(IPV4_2),
     IpNet::V4(IPV4_3),
@@ -47,10 +47,10 @@ pub const FORWARDING_BLACK_LIST: RFC = RFC {
     IpNet::V6(IPV6_5),
     IpNet::V6(IPV6_6),
   ],
-  ipv4_addresses: &[
+  ipv4_nets: &[
     IPV4_1, IPV4_2, IPV4_3, IPV4_4, IPV4_5, IPV4_6, IPV4_7, IPV4_8, IPV4_9,
   ],
-  ipv6_addresses: &[IPV6_1, IPV6_2, IPV6_3, IPV6_4, IPV6_5, IPV6_6],
+  ipv6_nets: &[IPV6_1, IPV6_2, IPV6_3, IPV6_4, IPV6_5, IPV6_6],
 };
 
 #[test]
@@ -70,7 +70,7 @@ fn t() {
   .enumerate()
   {
     let addr: Ipv4Net = s.parse().unwrap();
-    assert_eq!(FORWARDING_BLACK_LIST.ipv4_addresses[idx], addr);
+    assert_eq!(FORWARDING_BLACK_LIST.ipv4_nets[idx], addr);
   }
 
   for (idx, s) in [
@@ -85,6 +85,6 @@ fn t() {
   .enumerate()
   {
     let addr: Ipv6Net = s.parse().unwrap();
-    assert_eq!(FORWARDING_BLACK_LIST.ipv6_addresses[idx], addr);
+    assert_eq!(FORWARDING_BLACK_LIST.ipv6_nets[idx], addr);
   }
 }

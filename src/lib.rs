@@ -1,5 +1,6 @@
 #![doc = include_str!("../README.md")]
 #![no_std]
+#![forbid(unsafe_code)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![cfg_attr(docsrs, allow(unused_attributes))]
 #![deny(missing_docs)]
@@ -49,9 +50,9 @@ rfcs! {
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct RFC {
   id: u32,
-  ip_addresses: &'static [IpNet],
-  ipv4_addresses: &'static [Ipv4Net],
-  ipv6_addresses: &'static [Ipv6Net],
+  ip_nets: &'static [IpNet],
+  ipv4_nets: &'static [Ipv4Net],
+  ipv6_nets: &'static [Ipv6Net],
 }
 
 impl RFC {
@@ -76,13 +77,13 @@ impl RFC {
   /// ```rust
   /// use iprfc::RFC6890;
   ///
-  /// for ip in RFC6890.ip_addresses() {
+  /// for ip in RFC6890.ip_nets() {
   ///   println!("{}", ip);
   /// }
   /// ```
   #[inline]
-  pub const fn ip_addresses(&self) -> &'static [IpNet] {
-    self.ip_addresses
+  pub const fn ip_nets(&self) -> &'static [IpNet] {
+    self.ip_nets
   }
 
   /// Get all of the IPv4 addresses of the RFC
@@ -92,13 +93,13 @@ impl RFC {
   /// ```rust
   /// use iprfc::RFC6890;
   ///
-  /// for ip in RFC6890.ipv4_addresses() {
+  /// for ip in RFC6890.ipv4_nets() {
   ///   println!("{}", ip);
   /// }
   /// ```
   #[inline]
-  pub const fn ipv4_addresses(&self) -> &'static [Ipv4Net] {
-    self.ipv4_addresses
+  pub const fn ipv4_nets(&self) -> &'static [Ipv4Net] {
+    self.ipv4_nets
   }
 
   /// Get all of the IPv6 addresses of the RFC
@@ -108,12 +109,12 @@ impl RFC {
   /// ```rust
   /// use iprfc::RFC6890;
   ///
-  /// for ip in RFC6890.ipv6_addresses() {
+  /// for ip in RFC6890.ipv6_nets() {
   ///   println!("{}", ip);
   /// }
   #[inline]
-  pub const fn ipv6_addresses(&self) -> &'static [Ipv6Net] {
-    self.ipv6_addresses
+  pub const fn ipv6_nets(&self) -> &'static [Ipv6Net] {
+    self.ipv6_nets
   }
 
   /// Returns `true` if the ip is contained by the [`RFC`].
@@ -194,42 +195,42 @@ pub trait Contains<T>: sealed::Sealed {
 impl Contains<IpNet> for RFC {
   #[inline]
   fn contains(&self, ip: &IpNet) -> bool {
-    self.ip_addresses.iter().any(|&i| i.contains(ip))
+    self.ip_nets.iter().any(|&i| i.contains(ip))
   }
 }
 
 impl Contains<IpAddr> for RFC {
   #[inline]
   fn contains(&self, ip: &IpAddr) -> bool {
-    self.ip_addresses.iter().any(|&i| i.contains(ip))
+    self.ip_nets.iter().any(|&i| i.contains(ip))
   }
 }
 
 impl Contains<Ipv4Net> for RFC {
   #[inline]
   fn contains(&self, ip: &Ipv4Net) -> bool {
-    self.ipv4_addresses.iter().any(|&i| i.contains(ip))
+    self.ipv4_nets.iter().any(|&i| i.contains(ip))
   }
 }
 
 impl Contains<Ipv4Addr> for RFC {
   #[inline]
   fn contains(&self, ip: &Ipv4Addr) -> bool {
-    self.ipv4_addresses.iter().any(|&i| i.contains(ip))
+    self.ipv4_nets.iter().any(|&i| i.contains(ip))
   }
 }
 
 impl Contains<Ipv6Net> for RFC {
   #[inline]
   fn contains(&self, ip: &Ipv6Net) -> bool {
-    self.ipv6_addresses.iter().any(|&i| i.contains(ip))
+    self.ipv6_nets.iter().any(|&i| i.contains(ip))
   }
 }
 
 impl Contains<Ipv6Addr> for RFC {
   #[inline]
   fn contains(&self, ip: &Ipv6Addr) -> bool {
-    self.ipv6_addresses.iter().any(|&i| i.contains(ip))
+    self.ipv6_nets.iter().any(|&i| i.contains(ip))
   }
 }
 

@@ -1,6 +1,6 @@
 [package]
 name = "iprfc"
-version = "0.0.0"
+version = "0.1.0"
 edition = "2021"
 repository = "https://github.com/al8n/iprfc"
 homepage = "https://github.com/al8n/iprfc"
@@ -8,11 +8,6 @@ documentation = "https://docs.rs/iprfc"
 description = "Known RFCs for IP addresses"
 license = "MIT OR Apache-2.0"
 rust-version = "1.56.0"
-
-[[bench]]
-path = "benches/foo.rs"
-name = "foo"
-harness = false
 
 [features]
 default = []

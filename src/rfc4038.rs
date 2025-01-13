@@ -16,9 +16,9 @@ const IPV6_1: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0, 0, 0, 0, 0, 65535, 
 /// [RFC 4038]: https://datatracker.ietf.org/doc/rfc4038/
 pub const RFC4038: RFC = RFC {
   id: 4038,
-  ip_addresses: &[IpNet::V6(IPV6_1)],
-  ipv4_addresses: &[],
-  ipv6_addresses: &[IPV6_1],
+  ip_nets: &[IpNet::V6(IPV6_1)],
+  ipv4_nets: &[],
+  ipv6_nets: &[IPV6_1],
 };
 
 #[test]

@@ -15,9 +15,9 @@ const IPV4_1: Ipv4Net = Ipv4Net::new_assert(Ipv4Addr::new(192, 0, 0, 0), 29);
 /// [RFC 7335]: https://datatracker.ietf.org/doc/rfc7335/
 pub const RFC7335: RFC = RFC {
   id: 7335,
-  ip_addresses: &[IpNet::V4(IPV4_1)],
-  ipv4_addresses: &[IPV4_1],
-  ipv6_addresses: &[],
+  ip_nets: &[IpNet::V4(IPV4_1)],
+  ipv4_nets: &[IPV4_1],
+  ipv6_nets: &[],
 };
 
 #[test]

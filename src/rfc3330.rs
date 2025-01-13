@@ -100,7 +100,7 @@ const IPV4_11: Ipv4Net = Ipv4Net::new_assert(Ipv4Addr::new(240, 0, 0, 0), 4);
 /// [RFC 2544]: https://datatracker.ietf.org/doc/rfc2544/
 pub const RFC3330: RFC = RFC {
   id: 3330,
-  ip_addresses: &[
+  ip_nets: &[
     IpNet::V4(IPV4_1),
     IpNet::V4(IPV4_2),
     IpNet::V4(IPV4_3),
@@ -113,10 +113,10 @@ pub const RFC3330: RFC = RFC {
     IpNet::V4(IPV4_10),
     IpNet::V4(IPV4_11),
   ],
-  ipv4_addresses: &[
+  ipv4_nets: &[
     IPV4_1, IPV4_2, IPV4_3, IPV4_4, IPV4_5, IPV4_6, IPV4_7, IPV4_8, IPV4_9, IPV4_10, IPV4_11,
   ],
-  ipv6_addresses: &[],
+  ipv6_nets: &[],
 };
 
 #[test]
@@ -138,6 +138,6 @@ fn t() {
   .enumerate()
   {
     let addr: Ipv4Net = s.parse().unwrap();
-    assert_eq!(RFC3330.ipv4_addresses[idx], addr);
+    assert_eq!(RFC3330.ipv4_nets[idx], addr);
   }
 }

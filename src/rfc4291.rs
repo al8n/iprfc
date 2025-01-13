@@ -40,7 +40,7 @@ const IPV6_7: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0xff00, 0, 0, 0, 0, 0,
 /// [RFC 4291]: https://datatracker.ietf.org/doc/rfc4291/
 pub const RFC4291: RFC = RFC {
   id: 4291,
-  ip_addresses: &[
+  ip_nets: &[
     IpNet::V6(IPV6_1),
     IpNet::V6(IPV6_2),
     IpNet::V6(IPV6_3),
@@ -49,8 +49,8 @@ pub const RFC4291: RFC = RFC {
     IpNet::V6(IPV6_6),
     IpNet::V6(IPV6_7),
   ],
-  ipv4_addresses: &[],
-  ipv6_addresses: &[IPV6_1, IPV6_2, IPV6_3, IPV6_4, IPV6_5, IPV6_6, IPV6_7],
+  ipv4_nets: &[],
+  ipv6_nets: &[IPV6_1, IPV6_2, IPV6_3, IPV6_4, IPV6_5, IPV6_6, IPV6_7],
 };
 
 #[test]
@@ -65,6 +65,6 @@ fn t() {
     "ff00::/8",
   ].iter().enumerate() {
     let addr: Ipv6Net = addr.parse().unwrap();
-    assert_eq!(RFC4291.ipv6_addresses[i], addr);
+    assert_eq!(RFC4291.ipv6_nets[i], addr);
   }
 }

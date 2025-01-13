@@ -21,9 +21,9 @@ const IPV4_4: Ipv4Net = Ipv4Net::new_assert(Ipv4Addr::new(198, 18, 0, 0), 15);
 /// [RFC 5735]: https://datatracker.ietf.org/doc/rfc5735/
 pub const RFC5735: RFC = RFC {
   id: 5735,
-  ip_addresses: &[IpNet::V4(IPV4_1), IpNet::V4(IPV4_2), IpNet::V4(IPV4_3), IpNet::V4(IPV4_4)],
-  ipv4_addresses: &[IPV4_1, IPV4_2, IPV4_3, IPV4_4],
-  ipv6_addresses: &[],
+  ip_nets: &[IpNet::V4(IPV4_1), IpNet::V4(IPV4_2), IpNet::V4(IPV4_3), IpNet::V4(IPV4_4)],
+  ipv4_nets: &[IPV4_1, IPV4_2, IPV4_3, IPV4_4],
+  ipv6_nets: &[],
 };
 
 #[test]
@@ -33,6 +33,6 @@ fn t() {
     .enumerate()
   {
     let addr: Ipv4Net = s.parse().unwrap();
-    assert_eq!(RFC5735.ipv4_addresses[idx], addr);
+    assert_eq!(RFC5735.ipv4_nets[idx], addr);
   }
 }

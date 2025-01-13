@@ -19,9 +19,9 @@ const IPV4_3: Ipv4Net = Ipv4Net::new_assert(Ipv4Addr::new(192, 168, 0, 0), 16);
 /// [RFC 1918]: https://datatracker.ietf.org/doc/rfc1918/
 pub const RFC1918: RFC = RFC {
   id: 1918,
-  ip_addresses: &[IpNet::V4(IPV4_1), IpNet::V4(IPV4_2), IpNet::V4(IPV4_3)],
-  ipv4_addresses: &[IPV4_1, IPV4_2, IPV4_3],
-  ipv6_addresses: &[],
+  ip_nets: &[IpNet::V4(IPV4_1), IpNet::V4(IPV4_2), IpNet::V4(IPV4_3)],
+  ipv4_nets: &[IPV4_1, IPV4_2, IPV4_3],
+  ipv6_nets: &[],
 };
 
 #[test]
@@ -31,6 +31,6 @@ fn t() {
     .enumerate()
   {
     let addr: Ipv4Net = s.parse().unwrap();
-    assert_eq!(RFC1918.ipv4_addresses[idx], addr);
+    assert_eq!(RFC1918.ipv4_nets[idx], addr);
   }
 }

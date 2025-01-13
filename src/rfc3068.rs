@@ -17,9 +17,9 @@ const IPV6_1: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(8194, 49240, 25345, 0,
 /// [RFC 3068]: https://datatracker.ietf.org/doc/rfc3068/
 pub const RFC3068: RFC = RFC {
   id: 3068,
-  ip_addresses: &[IpNet::V4(IPV4_1), IpNet::V6(IPV6_1)],
-  ipv4_addresses: &[IPV4_1],
-  ipv6_addresses: &[IPV6_1],
+  ip_nets: &[IpNet::V4(IPV4_1), IpNet::V6(IPV6_1)],
+  ipv4_nets: &[IPV4_1],
+  ipv6_nets: &[IPV6_1],
 };
 
 #[test]
