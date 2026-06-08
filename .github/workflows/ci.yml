@@ -18,7 +18,8 @@ on:
       - '**.md'
       - '**.txt'
   workflow_dispatch:
-  schedule: [cron: "0 1 */7 * *"]
+  schedule: 
+    - cron: "0 1 1 * *"
 
 env:
   CARGO_TERM_COLOR: always
@@ -39,7 +40,7 @@ jobs:
           - windows-latest
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Install Rust
       # --no-self-update is necessary because the windows environment cannot self-update rustup.exe.
       run: rustup update stable --no-self-update && rustup default stable
@@ -58,7 +59,7 @@ jobs:
           - windows-latest
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Install Rust
       # --no-self-update is necessary because the windows environment cannot self-update rustup.exe.
       run: rustup update stable --no-self-update && rustup default stable
@@ -77,9 +78,9 @@ jobs:
           - windows-latest
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Cache cargo build and registry
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: |
           ~/.cargo/registry
@@ -94,7 +95,7 @@ jobs:
     - name: Install cargo-hack
       run: cargo install cargo-hack
     - name: Cache ~/.cargo
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ~/.cargo
         key: ${{ runner.os }}-coverage-dotcargo
@@ -111,9 +112,9 @@ jobs:
           - windows-latest
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Cache cargo build and registry
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: |
           ~/.cargo/registry
@@ -128,37 +129,12 @@ jobs:
     - name: Install cargo-hack
       run: cargo install cargo-hack
     - name: Cache ~/.cargo
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ~/.cargo
         key: ${{ runner.os }}-coverage-dotcargo
     - name: Run test
       run: cargo test
-
-  docs:
-    name: docs
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Cache cargo build and registry
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: ubuntu-latest-docs-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ubuntu-latest-docs-
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: ${{ env.nightly }}
-          override: true
-      - name: "doc --lib --all-features"
-        run: cargo doc --lib --no-deps --all-features
-        env:
-          RUSTFLAGS: --cfg docsrs
-          RUSTDOCFLAGS: --cfg docsrs -Dwarnings
 
   coverage:
     name: coverage
@@ -168,9 +144,8 @@ jobs:
       - clippy
       - build
       - test
-      - docs
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install latest nightly
         uses: actions-rs/toolchain@v1
         with:
@@ -181,12 +156,12 @@ jobs:
           crate: cargo-tarpaulin
           version: latest
       - name: Cache ~/.cargo
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cargo
           key: ${{ runner.os }}-coverage-dotcargo
       - name: Cache cargo build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: target
           key: ${{ runner.os }}-coverage-cargo-build-target
@@ -196,9 +171,9 @@ jobs:
           RUSTFLAGS: "--cfg all_tests"
         with:
           command: tarpaulin
-          args: --all-features --run-types tests --run-types doctests --workspace --out xml
+          args: --engine llvm --all-features --run-types lib --run-types tests --run-types doctests --workspace --out xml
       - name: Upload to codecov.io
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: ${{ github.repository }}

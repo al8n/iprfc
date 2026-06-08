@@ -1,5 +1,13 @@
 # RELEASED
 
+## 0.2.2
+
+- Fix the `RFC6890` IPv6 table: `2001::/16` over-covered the whole block and
+  swallowed real global-unicast space (e.g. RIR allocations, `2001:4860::`).
+  Model the actual special-purpose ranges instead — `2001::/23` (IETF Protocol
+  Assignments) and `2001:db8::/32` (Documentation) — matching the documented
+  table and the IANA IPv6 Special-Purpose registry.
+
 ## 0.1.0 (January 14th, 2025)
 
 - Add `Filter` and `RFCs` struct

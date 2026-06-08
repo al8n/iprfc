@@ -67,17 +67,20 @@ const IPV6_4: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0, 0, 0, 0, 0, 65535, 
 /// 100::/64
 const IPV6_5: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0x0100, 0, 0, 0, 0, 0, 0, 0), 64);
 
-/// 2001::/16
-const IPV6_6: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0x2001, 0, 0, 0, 0, 0, 0, 0), 16);
+/// 2001::/23
+const IPV6_6: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0x2001, 0, 0, 0, 0, 0, 0, 0), 23);
+
+/// 2001:db8::/32
+const IPV6_7: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0x2001, 0x0db8, 0, 0, 0, 0, 0, 0), 32);
 
 /// 2002::/16
-const IPV6_7: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0x2002, 0, 0, 0, 0, 0, 0, 0), 16);
+const IPV6_8: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0x2002, 0, 0, 0, 0, 0, 0, 0), 16);
 
 /// fc00::/7
-const IPV6_8: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0xfc00, 0, 0, 0, 0, 0, 0, 0), 7);
+const IPV6_9: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0xfc00, 0, 0, 0, 0, 0, 0, 0), 7);
 
 /// fe80::/10
-const IPV6_9: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0xfe80, 0, 0, 0, 0, 0, 0, 0), 10);
+const IPV6_10: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0xfe80, 0, 0, 0, 0, 0, 0, 0), 10);
 
 
 /// [RFC 6890] Special-Purpose IP Address Registries
@@ -233,6 +236,7 @@ pub const RFC6890: RFC = RFC {
     IpNet::V6(IPV6_7),
     IpNet::V6(IPV6_8),
     IpNet::V6(IPV6_9),
+    IpNet::V6(IPV6_10),
   ],
   ipv4_nets: &[
     IPV4_1, IPV4_2, IPV4_3, IPV4_4, IPV4_5, IPV4_6, IPV4_7, IPV4_8, IPV4_9, IPV4_10, IPV4_11, IPV4_12, IPV4_13, IPV4_14, IPV4_15, IPV4_16,
@@ -247,6 +251,7 @@ pub const RFC6890: RFC = RFC {
     IPV6_7,
     IPV6_8,
     IPV6_9,
+    IPV6_10,
   ],
 };
 
@@ -281,12 +286,36 @@ fn t() {
     "64:ff9b::/96",
     "::ffff:0:0/96",
     "100::/64",
-    "2001::/16",
+    "2001::/23",
+    "2001:db8::/32",
     "2002::/16",
     "fc00::/7",
     "fe80::/10",
   ].iter().enumerate() {
     let addr: Ipv6Net = s.parse().unwrap();
     assert_eq!(RFC6890.ipv6_nets[idx], addr);
+  }
+}
+
+#[test]
+fn ipv6_2001_block_is_not_wholesale_special() {
+  use core::net::IpAddr;
+
+  // Real global-unicast addresses inside 2001::/16 but outside the special
+  // sub-ranges must NOT be classified as special-purpose.
+  for s in ["2001:4860:4860::8888", "2001:200::1", "2001:4998::1"] {
+    let ip: IpAddr = s.parse().unwrap();
+    assert!(!RFC6890.contains(&ip), "{s} is global unicast, not special-purpose");
+  }
+
+  // The genuine special-purpose ranges within 2001:: remain covered.
+  for s in [
+    "2001::1",     // 2001::/23 IETF Protocol Assignments
+    "2001:2::1",   // 2001:2::/48 benchmarking (inside /23)
+    "2001:10::1",  // 2001:10::/28 ORCHID (inside /23)
+    "2001:db8::1", // 2001:db8::/32 documentation
+  ] {
+    let ip: IpAddr = s.parse().unwrap();
+    assert!(RFC6890.contains(&ip), "{s} is special-purpose");
   }
 }

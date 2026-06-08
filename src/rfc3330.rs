@@ -41,43 +41,43 @@ const IPV4_11: Ipv4Net = Ipv4Net::new_assert(Ipv4Addr::new(240, 0, 0, 0), 4);
 ///
 /// **Addresses:**
 /// - **IPv4:**
-///   1. `0.0.0.0/8`: Addresses in this block refer to source hosts on
-///       "this" network.  Address 0.0.0.0/32 may be used as a
-///       source address for this host on this network; other
-///       addresses within 0.0.0.0/8 may be used to refer to
-///       specified hosts on this network [RFC 1700, page 4].
+///   1. `0.0.0.0/8`: Addresses in this block refer to source hosts on "this" network.
+///      Address 0.0.0.0/32 may be used as a
+///      source address for this host on this network; other
+///      addresses within 0.0.0.0/8 may be used to refer to
+///      specified hosts on this network [RFC 1700, page 4].
 ///   2. `10.0.0.0/8`: This block is set aside for use in private networks.
-///       Its intended use is documented in [RFC 1918].
-///       Addresses within this block should not
-///       appear on the public Internet.
+///      Its intended use is documented in [RFC 1918].
+///      Addresses within this block should not
+///      appear on the public Internet.
 ///   3. `127.0.0.0/8`: This block is assigned for use as the Internet host
-///       loopback address.  A datagram sent by a higher level protocol to an
-///       address anywhere within this block should loop back inside the host.
-///       This is ordinarily implemented using only 127.0.0.1/32 for loopback,
-///       but no addresses within this block should ever appear on any network
-///       anywhere [RFC 1700, page 5].
+///      loopback address.  A datagram sent by a higher level protocol to an
+///      address anywhere within this block should loop back inside the host.
+///      This is ordinarily implemented using only 127.0.0.1/32 for loopback,
+///      but no addresses within this block should ever appear on any network
+///      anywhere [RFC 1700, page 5].
 ///   4. `169.254.0.0/16`: This is the "link local" block.  It
-///       is allocated for communication between hosts on a
-///       single link.  Hosts obtain these addresses by
-///       auto-configuration, such as when a DHCP server may
-///       not be found.
+///      is allocated for communication between hosts on a
+///      single link.  Hosts obtain these addresses by
+///      auto-configuration, such as when a DHCP server may
+///      not be found.
 ///   5. `172.16.0.0/12`: This block is set aside for use in
-///       private networks.  Its intended use is documented in
-///       [RFC 1918].  Addresses within this block should not
-///       appear on the public Internet.
+///      private networks.  Its intended use is documented in
+///      [RFC 1918].  Addresses within this block should not
+///      appear on the public Internet.
 ///   6. `192.0.2.0/24`: This block is assigned as "TEST-NET" for use in
-///       documentation and example code.  It is often used in conjunction with
-///       domain names `example.com` or `example.net` in vendor and protocol
-///       documentation.  Addresses within this block should not appear on the
-///       public Internet.
+///      documentation and example code.  It is often used in conjunction with
+///      domain names `example.com` or `example.net` in vendor and protocol
+///      documentation.  Addresses within this block should not appear on the
+///      public Internet.
 ///   7. `192.88.99.0/24`: This block is allocated for use as 6to4 relay
-///       anycast addresses, according to [RFC 3068].
+///      anycast addresses, according to [RFC 3068].
 ///   8. `192.168.0.0/16`: This block is set aside for use in private networks.
-///       Its intended use is documented in [RFC 1918].  Addresses within this
-///       block should not appear on the public Internet.
+///      Its intended use is documented in [RFC 1918].  Addresses within this
+///      block should not appear on the public Internet.
 ///   9. `198.18.0.0/15`: This block has been allocated for use
-///       in benchmark tests of network interconnect devices.
-///       Its use is documented in [RFC 2544].
+///      in benchmark tests of network interconnect devices.
+///      Its use is documented in [RFC 2544].
 ///   10. `224.0.0.0/4`: This block, formerly known as the Class
 ///       D address space, is allocated for use in IPv4
 ///       multicast address assignments.  The IANA guidelines

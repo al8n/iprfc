@@ -1,6 +1,6 @@
 [package]
 name = "iprfc"
-version = "0.2.1"
+version = "0.2.2"
 edition = "2021"
 repository = "https://github.com/al8n/iprfc"
 homepage = "https://github.com/al8n/iprfc"
@@ -19,16 +19,18 @@ serde = ["dep:serde", "ipnet/serde", "bitflags/serde"]
 [dependencies]
 bitflags = { version = "2", default-features = false }
 paste = "1"
-ipnet = { version = "^2.11", default-features = false }
+ipnet = { version = "2.12", default-features = false }
 
 serde = { version = "1", optional = true, features = ["derive"] }
-
 
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 
-[lints.rust]
+[lints]
+workspace = true
+
+[workspace.lints.rust]
 rust_2018_idioms = "warn"
 single_use_lifetimes = "warn"
 
