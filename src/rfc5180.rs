@@ -4,14 +4,14 @@ use ipnet::{IpNet, Ipv6Net};
 
 use super::RFC;
 
-/// 2001:0200::/48
-const IPV6_1: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0x2001, 0x0200, 0, 0, 0, 0, 0, 0), 48);
+/// 2001:0002::/48
+const IPV6_1: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0x2001, 0x0002, 0, 0, 0, 0, 0, 0), 48);
 
 /// [RFC 5180] IPv6 Benchmarking Methodology for Network Interconnect Devices
 ///
 /// **Addresses:**
 /// - **IPv6:**
-///   1. `2001:0200::/48`: §8 IANA Considerations
+///   1. `2001:0002::/48`: §8 IANA Considerations
 ///
 /// [RFC 5180]: https://datatracker.ietf.org/doc/rfc5180/
 pub const RFC5180: RFC = RFC {
@@ -23,6 +23,6 @@ pub const RFC5180: RFC = RFC {
 
 #[test]
 fn t() {
-  let addr: Ipv6Net = "2001:0200::/48".parse().unwrap(); 
+  let addr: Ipv6Net = "2001:0002::/48".parse().unwrap();
   assert_eq!(IPV6_1, addr);
 }
