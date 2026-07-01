@@ -13,8 +13,10 @@ use core::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 pub use ipnet::{IpNet, Ipv4Net, Ipv6Net};
 
 pub use forwarding_black_list::{FORWARDING_BLACKLIST, FORWARDING_BLACKLIST_ID};
+pub use semantic::*;
 
 mod forwarding_black_list;
+mod semantic;
 
 macro_rules! rfcs {
   ($(($index:literal, $id:literal)), +$(,)?) => {
@@ -91,7 +93,7 @@ macro_rules! rfcs {
         /// ```rust
         /// use iprfc::RFCs;
         ///
-        /// assert_eq!(29, RFCs::len());
+        /// assert_eq!(30, RFCs::len());
         /// ```
         #[inline]
         pub const fn len() -> usize {
@@ -169,7 +171,7 @@ macro_rules! rfcs {
 }
 
 rfcs! {
-  (0, 919), (1, 1112), (2, 1122), (3, 1918), (4, 2544), (5, 2765), (6, 2928), (7, 3056), (8, 3068), (9, 3171), (10, 3330), (11, 3849), (12, 3927), (13, 4038), (14, 4193), (15, 4291), (16, 4380), (17, 4773), (18, 4843), (19, 5180), (20, 5735), (21, 5737), (22, 6052), (23, 6333), (24, 6598), (25, 6666), (26, 6890), (27, 7335),
+  (0, 919), (1, 1112), (2, 1122), (3, 1918), (4, 2544), (5, 2765), (6, 2928), (7, 3056), (8, 3068), (9, 3171), (10, 3330), (11, 3849), (12, 3927), (13, 4038), (14, 4193), (15, 4291), (16, 4380), (17, 4773), (18, 4843), (19, 5180), (20, 5735), (21, 5737), (22, 6052), (23, 6333), (24, 6598), (25, 6666), (26, 6890), (27, 7335), (28, 9637),
 }
 
 /// All known RFCs

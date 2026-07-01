@@ -24,6 +24,21 @@ Known RFCs for IP addresses.
 iprfc = "0.2"
 ```
 
+## Const Classifiers
+
+`iprfc` exposes const functions for common RFC address classes, so downstream
+crates can reuse the same no-std range checks in constructors and predicates.
+
+```rust
+use iprfc::{is_documentation_ip_addr, is_private_ip_addr};
+
+let private = "10.0.0.1".parse().unwrap();
+assert!(is_private_ip_addr(private));
+
+let documentation = "3fff::1".parse().unwrap();
+assert!(is_documentation_ip_addr(documentation));
+```
+
 ## Pedigree
 
 - Reference to: [HashiCorp's go-sockaddr `rfc.go`](https://github.com/hashicorp/go-sockaddr/blob/master/rfc.go)

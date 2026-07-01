@@ -1,6 +1,6 @@
 [package]
 name = "iprfc"
-version = "0.2.2"
+version = "0.2.3"
 edition = "2021"
 repository = "https://github.com/al8n/iprfc"
 homepage = "https://github.com/al8n/iprfc"
@@ -33,4 +33,3 @@ workspace = true
 [workspace.lints.rust]
 rust_2018_idioms = "warn"
 single_use_lifetimes = "warn"
-
