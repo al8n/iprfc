@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 1.0.0 (release candidate)
+
+- Add downstream contract tests for the public catalog, const classifiers,
+  public `Contains` inputs, and readable `Filter` Serde with unknown-bit
+  retention.
+- Add Rust 1.81 integration, rustdoc and package CI gates, plus a
+  human-authorized release checklist.
+
 - Fix panics in subsets containing `Filter::FORWARDING_BLACKLIST` and accept
   the decimal blacklist identifier in string indexing, preserving existing
   filter bit positions and RFC iteration order.
