@@ -2,7 +2,9 @@
 
 ## Unreleased
 
-## 1.0.0 (release candidate)
+## Released
+
+## 1.0.0 (October 4, 2026)
 
 - Add downstream contract tests for the public catalog, const classifiers,
   public `Contains` inputs, and readable `Filter` Serde with unknown-bit
@@ -27,8 +29,6 @@
 - Support `serde` without `std`, test stable feature combinations, Rust 1.81,
   and bare-metal builds in CI, and replace obsolete coverage actions.
 - Replace the unmaintained `paste` dependency with `pastey` 0.2.
-
-## Released
 
 ## 0.2.3 (July 1, 2026)
 
