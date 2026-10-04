@@ -59,6 +59,9 @@ effect until a named flag is defined for them. `RFCs::get_unchecked` keeps its
 existing compatibility name; it is memory-safe and panics when an identifier is
 missing.
 
+In human-readable Serde formats, named `Filter` flags are separated by ` | `
+and retained unknown bits are represented as hexadecimal `0x...` terms.
+
 Public API changes follow SemVer. Corrections to factual RFC tables and a
 newer checked-in IANA snapshot can change membership in a patch release; pin
 an exact version when data stability matters. Any MSRV increase will be called

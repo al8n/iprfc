@@ -323,6 +323,7 @@ impl RFC {
   /// for ip in RFC6890.ipv6_nets() {
   ///   println!("{}", ip);
   /// }
+  /// ```
   #[inline]
   pub const fn ipv6_nets(&self) -> &'static [Ipv6Net] {
     self.ipv6_nets

@@ -23,6 +23,9 @@ ipnet = { version = "2.12", default-features = false }
 
 serde = { version = "1", default-features = false, optional = true, features = ["derive"] }
 
+[dev-dependencies]
+serde_test = "1"
+
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
