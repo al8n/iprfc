@@ -23,7 +23,7 @@ Known RFCs for IP addresses.
 
 ```toml
 [dependencies]
-iprfc = "0.2"
+iprfc = "1"
 ```
 
 ## Scope and features
@@ -34,7 +34,7 @@ users can disable it:
 
 ```toml
 [dependencies]
-iprfc = { version = "0.2", default-features = false }
+iprfc = { version = "1", default-features = false }
 ```
 
 The optional `serde` feature enables serialization and deserialization of
