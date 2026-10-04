@@ -26,6 +26,62 @@ Known RFCs for IP addresses.
 iprfc = "0.2"
 ```
 
+## Scope and features
+
+`iprfc` is a `#![no_std]` crate with an MSRV of Rust 1.81. The default `std`
+feature enables `std` support in its dependencies; embedded and other `no_std`
+users can disable it:
+
+```toml
+[dependencies]
+iprfc = { version = "0.2", default-features = false }
+```
+
+The optional `serde` feature enables serialization and deserialization of
+`Filter` and the re-exported network types. It also works without `std`: combine
+`default-features = false` with `features = ["serde"]`.
+
+Each named `RFCnnnn` constant is a frozen representation of the address blocks
+described by that RFC, not a live IANA registry. The crate currently has 29
+named RFC entries. `RFCs::iter()` and `RFCs::len()` also include the
+compatibility pseudo-RFC `FORWARDING_BLACKLIST`, so `RFCs::len()` is currently
+30. This is a curated collection, not a claim to implement every address RFC
+or the complete current registry.
+
+`Filter` has an append-only bit layout: existing named RFC bits do not move and
+new known RFCs use unassigned bits. Unknown bits select no RFC in
+`RFCs::filter`, which iterates named flags only. Callers using APIs such as
+`Filter::from_bits_retain` may retain unknown bits, but they have no filtering
+effect until a named flag is defined for them. `RFCs::get_unchecked` keeps its
+existing compatibility name; it is memory-safe and panics when an identifier is
+missing.
+
+Public API changes follow SemVer. Corrections to factual RFC tables can change
+membership in a patch release; pin an exact version if that data stability is
+required. Any MSRV increase will be called out explicitly.
+
+## Historical address data and policy
+
+Do not treat a match, or its absence, as a current routing decision, firewall
+rule, SSRF defense, allowlist, denylist, or proof of global routability. Address
+families are not normalized: an IPv4-mapped IPv6 address remains IPv6 unless
+the caller explicitly normalizes it first.
+
+`RFC6890` is the April 2013 registry snapshot published in
+[RFC 6890](https://www.rfc-editor.org/rfc/rfc6890.html). The
+`FORWARDING_BLACKLIST` pseudo-RFC selects the snapshot's destinations with
+`Forwardable = false`, after its more-specific `Forwardable = true` exceptions.
+It therefore exempts `192.0.0.0/29`, while `192.0.0.9` and `192.0.0.10` remain
+historically blacklisted. The later
+[RFC 7335](https://www.rfc-editor.org/rfc/rfc7335.html) describes that same
+`/29`; it does not make the snapshot current. Likewise,
+[RFC 9637](https://www.rfc-editor.org/rfc/rfc9637.html)'s 2024 `3fff::/20`
+documentation prefix is deliberately not in the historical forwarding list.
+
+The forwarding list is represented as canonical, disjoint CIDRs. A network
+query succeeds only when one listed CIDR entirely contains the queried network;
+adjacent entries are not combined into a union for network containment.
+
 ## Const Classifiers
 
 `iprfc` exposes const functions for common RFC address classes, so downstream
@@ -40,6 +96,11 @@ assert!(is_private_ip_addr(private));
 let documentation = "3fff::1".parse().unwrap();
 assert!(is_documentation_ip_addr(documentation));
 ```
+
+These semantic classifiers follow their separately cited RFCs rather than the
+historical RFC 6890 snapshot. In particular, IPv6 documentation classification
+includes both [RFC 3849](https://www.rfc-editor.org/rfc/rfc3849.html) and
+[RFC 9637](https://www.rfc-editor.org/rfc/rfc9637.html).
 
 ## Pedigree
 
@@ -60,4 +121,3 @@ Copyright (c) 2021 Al Liu.
 [crates-url]: https://crates.io/crates/iprfc
 [codecov-url]: https://app.codecov.io/gh/al8n/iprfc/
 [discord]: https://discord.gg/Pk5PKvpWQM
-

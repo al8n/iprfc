@@ -10,7 +10,7 @@ const IPV4_1: Ipv4Net = Ipv4Net::new_assert(Ipv4Addr::new(0, 0, 0, 0), 8);
 /// 10.0.0.0/8
 const IPV4_2: Ipv4Net = Ipv4Net::new_assert(Ipv4Addr::new(10, 0, 0, 0), 8);
 
-/// 100.64.0.1/10
+/// 100.64.0.0/10
 const IPV4_3: Ipv4Net = Ipv4Net::new_assert(Ipv4Addr::new(100, 64, 0, 0), 10);
 
 /// 127.0.0.0/8
@@ -37,7 +37,7 @@ const IPV4_10: Ipv4Net = Ipv4Net::new_assert(Ipv4Addr::new(192, 88, 99, 0), 24);
 /// 192.168.0.0/16
 const IPV4_11: Ipv4Net = Ipv4Net::new_assert(Ipv4Addr::new(192, 168, 0, 0), 16);
 
-/// 192.18.0.0/15
+/// 198.18.0.0/15
 const IPV4_12: Ipv4Net = Ipv4Net::new_assert(Ipv4Addr::new(198, 18, 0, 0), 15);
 
 /// 198.51.100.0/24
@@ -85,7 +85,11 @@ const IPV6_10: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0xfe80, 0, 0, 0, 0, 0
 
 /// [RFC 6890] Special-Purpose IP Address Registries
 ///
-/// 
+/// This constant is a historical snapshot of the registries as RFC 6890
+/// published them in April 2013. It is not a current IANA registry, and a
+/// block's presence here does not by itself establish its current routing or
+/// policy status.
+///
 /// From "RFC6890 §2.2.1 Information Requirements":
 ///
 /// The IPv4 and IPv6 Special-Purpose Address Registries maintain the
@@ -137,7 +141,7 @@ const IPV6_10: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0xfe80, 0, 0, 0, 0, 0
 ///
 /// **Addresses:**
 /// - **IPv4:**
-/// 
+///
 ///   | Address Block | Name | RFC | Allocation Date | Termination Date | Source | Destination | Forwardable | Global | Reserved-by-Protocol |
 ///   |--------------|------|-----|-----------------|------------------|--------|-------------|-------------|--------|-------------------|
 ///   | `0.0.0.0/8` | "This host on this network" | [RFC 1122], Section 3.2.1.3 | September 1981 | N/A | true | false | false | false | true |
@@ -147,7 +151,7 @@ const IPV6_10: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0xfe80, 0, 0, 0, 0, 0
 ///   | `169.254.0.0/16` | Link Local | [RFC 3927] | May 2005 | N/A | true | true | false | false | true |
 ///   | `172.16.0.0/12` | Private-Use | [RFC 1918] | February 1996 | N/A | true | true | true | false | false |
 ///   | `192.0.0.0/24`² | IETF Protocol Assignments | Section 2.1 of this document | January 2010 | N/A | false | false | false | false | false |
-///   | `192.0.0.0/29` | IPv4 Service Continuity Prefix | [RFC 6333], [RFC 7335] | June 2011 | N/A | true | true | true | false | false |
+///   | `192.0.0.0/29` | IPv4 Service Continuity Prefix | [RFC 6333], later [RFC 7335]³ | June 2011 | N/A | true | true | true | false | false |
 ///   | `192.0.2.0/24` | Documentation (TEST-NET-1) | [RFC 5737] | January 2010 | N/A | false | false | false | false | false |
 ///   | `192.88.99.0/24` | 6to4 Relay Anycast | [RFC 3068] | June 2001 | N/A | true | true | true | true | false |
 ///   | `192.168.0.0/16` | Private-Use | [RFC 1918] | February 1996 | N/A | true | true | true | false | false |
@@ -156,13 +160,16 @@ const IPV6_10: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0xfe80, 0, 0, 0, 0, 0
 ///   | `203.0.113.0/24` | Documentation (TEST-NET-3) | [RFC 5737] | January 2010 | N/A | false | false | false | false | false |
 ///   | `240.0.0.0/4` | Reserved | [RFC 1112], Section 4 | August 1989 | N/A | false | false | false | false | true |
 ///   | `255.255.255.255/32` | Limited Broadcast | [RFC 919], Section 7 | October 1984 | N/A | false | true | false | false | false |
-/// 
+///
 ///   ¹ Several protocols have been granted exceptions to this rule. For examples, see [RFC 4379] and [RFC 5884].
-/// 
+///
 ///   ² Not usable unless by virtue of a more specific reservation.
-/// 
+///
+///   ³ RFC 7335 was published after this April 2013 snapshot and describes
+///   the same `/29`; it is a later descriptive reference, not a table update.
+///
 /// - **IPv6:**
-/// 
+///
 ///   | Address Block | Name | RFC | Allocation Date | Termination Date | Source | Destination | Forwardable | Global | Reserved-by-Protocol |
 ///   |--------------|------|-----|-----------------|------------------|--------|-------------|-------------|--------|-------------------|
 ///   | `::1/128` | Loopback Address | [RFC 4291] | February 2006 | N/A | false | false | false | false | true |
@@ -178,11 +185,11 @@ const IPV6_10: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0xfe80, 0, 0, 0, 0, 0
 ///   | `2002::/16`² | 6to4 | [RFC 3056] | February 2001 | N/A | true | true | true | N/A | false |
 ///   | `fc00::/7` | Unique-Local | [RFC 4193] | October 2005 | N/A | true | true | true | false | false |
 ///   | `fe80::/10` | Linked-Scoped Unicast | [RFC 4291] | February 2006 | N/A | true | true | false | false | true |
-/// 
-/// 
+///
+///
 ///   ¹ Unless allowed by a more specific allocation.  
 ///   ² See [RFC 3056] for details.
-/// 
+///
 /// [RFC 919]: https://datatracker.ietf.org/doc/rfc919/
 /// [RFC 1112]: https://datatracker.ietf.org/doc/rfc1112/
 /// [RFC 1122]: https://datatracker.ietf.org/doc/rfc1122/
@@ -204,9 +211,10 @@ const IPV6_10: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0xfe80, 0, 0, 0, 0, 0
 /// [RFC 5884]: https://datatracker.ietf.org/doc/rfc5884/
 /// [RFC 6052]: https://datatracker.ietf.org/doc/rfc6052/
 /// [RFC 6333]: https://datatracker.ietf.org/doc/rfc6333/
-/// [RFC 6598]: https://datatracker.ietf.org/doc/rfc6666/
+/// [RFC 6598]: https://datatracker.ietf.org/doc/rfc6598/
 /// [RFC 6666]: https://datatracker.ietf.org/doc/rfc6666/
 /// [RFC 6890]: https://datatracker.ietf.org/doc/rfc6890/
+/// [RFC 7335]: https://datatracker.ietf.org/doc/rfc7335/
 pub const RFC6890: RFC = RFC {
   id: 6890,
   ip_nets: &[

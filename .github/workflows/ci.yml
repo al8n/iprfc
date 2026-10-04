@@ -5,17 +5,13 @@ on:
     branches:
       - main
     paths-ignore:
-      - 'README'
       - 'COPYRIGHT'
       - 'LICENSE-*'
-      - '**.md'
       - '**.txt'
   pull_request:
     paths-ignore:
-      - 'README'
       - 'COPYRIGHT'
       - 'LICENSE-*'
-      - '**.md'
       - '**.txt'
   workflow_dispatch:
   schedule: 
@@ -136,6 +132,34 @@ jobs:
     - name: Run test
       run: cargo test
 
+  compatibility:
+    name: compatibility
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+    - name: Install stable Rust
+      run: rustup update stable --no-self-update && rustup default stable
+    - name: Test stable feature combinations
+      run: |
+        cargo +stable test
+        cargo +stable test --no-default-features
+        cargo +stable test --no-default-features --features serde
+        cargo +stable test --all-features
+    - name: Install Rust 1.81
+      run: rustup toolchain install 1.81.0 --profile minimal
+    - name: Check Rust 1.81 all features
+      run: cargo +1.81.0 check --all-features
+    - name: Test Rust 1.81 all features
+      run: cargo +1.81.0 test --all-features --lib
+    - name: Doctest Rust 1.81 all features
+      run: cargo +1.81.0 test --all-features --doc
+    - name: Add bare-metal target
+      run: rustup target add thumbv7em-none-eabihf --toolchain stable
+    - name: Check bare-metal feature combinations
+      run: |
+        cargo +stable check --target thumbv7em-none-eabihf --no-default-features
+        cargo +stable check --target thumbv7em-none-eabihf --no-default-features --features serde
+
   coverage:
     name: coverage
     runs-on: ubuntu-latest
@@ -144,17 +168,13 @@ jobs:
       - clippy
       - build
       - test
+      - compatibility
     steps:
       - uses: actions/checkout@v7
       - name: Install latest nightly
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          override: true
-      - uses: actions-rs/install@v0.1
-        with:
-          crate: cargo-tarpaulin
-          version: latest
+        run: rustup toolchain install nightly --profile minimal
+      - name: Install cargo-tarpaulin
+        run: cargo +nightly install cargo-tarpaulin --locked
       - name: Cache ~/.cargo
         uses: actions/cache@v6
         with:
@@ -166,12 +186,7 @@ jobs:
           path: target
           key: ${{ runner.os }}-coverage-cargo-build-target
       - name: Run tarpaulin
-        uses: actions-rs/cargo@v1
-        env:
-          RUSTFLAGS: "--cfg all_tests"
-        with:
-          command: tarpaulin
-          args: --engine llvm --all-features --run-types lib --run-types tests --run-types doctests --workspace --out xml
+        run: cargo +nightly tarpaulin --engine llvm --all-features --run-types lib --run-types tests --run-types doctests --workspace --out xml
       - name: Upload to codecov.io
         uses: codecov/codecov-action@v7
         with:

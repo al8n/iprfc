@@ -1,18 +1,51 @@
-# RELEASED
+# Changelog
 
-## 0.2.2
+## Unreleased
+
+- Fix panics in subsets containing `Filter::FORWARDING_BLACKLIST` and accept
+  the decimal blacklist identifier in string indexing, preserving existing
+  filter bit positions and RFC iteration order.
+- Complete RFC 5735's 15-row table, include both mapped and translated IPv6
+  prefixes from RFC 2765, and narrow RFC 3068's IPv6 anycast address to `/128`.
+- Repair the historical RFC 6890 forwarding blacklist: apply the document's
+  more-specific forwardable exceptions and store the result as canonical,
+  disjoint CIDRs.
+- Complete the historical RFC 3330 September 2002 summary table and clarify
+  that RFC table constants are document snapshots rather than current IANA
+  policy.
+- Clarify compatibility behavior for `Filter`, `RFCs`, and factual RFC-table
+  corrections.
+- Support `serde` without `std`, test stable feature combinations, Rust 1.81,
+  and bare-metal builds in CI, and replace obsolete coverage actions.
+
+## Released
+
+## 0.2.3 (July 1, 2026)
+
+- Add const semantic IP classifiers.
+- Add RFC 9637's `3fff::/20` IPv6 documentation prefix.
+
+## 0.2.2 (June 8, 2026)
 
 - Fix the `RFC6890` IPv6 table: `2001::/16` over-covered the whole block and
   swallowed real global-unicast space (e.g. RIR allocations, `2001:4860::`).
-  Model the actual special-purpose ranges instead — `2001::/23` (IETF Protocol
-  Assignments) and `2001:db8::/32` (Documentation) — matching the documented
-  table and the IANA IPv6 Special-Purpose registry.
+  Model the RFC 6890 table's actual special-purpose ranges instead —
+  `2001::/23` (IETF Protocol Assignments) and `2001:db8::/32`
+  (Documentation).
 
-## 0.1.0 (January 14th, 2025)
+## 0.2.0 (January 14, 2025)
 
-- Add `Filter` and `RFCs` struct
-- Add indexing APIs
+- Add `Filter` and `RFCs`.
+- Add indexing APIs.
 
-## 0.1.0 (January 13rd, 2025)
+## 0.1.1 (January 13, 2025)
 
-- RFC919, RFC1112, RFC1122, RFC1918, RFC2544, RFC2765, RFC2928, RFC3056, RFC3068, RFC3171, RFC3330, RFC3849, RFC3927, RFC4038, RFC4193, RFC4291, RFC4380, RFC4773, RFC4843, RFC5180, RFC5735, RFC5737, RFC6052, RFC6333, RFC6598, RFC6666, RFC6890, RFC7335
+- Published version; this repository does not record a separately attributable
+  source change.
+
+## 0.1.0 (January 13, 2025)
+
+- Add RFC919, RFC1112, RFC1122, RFC1918, RFC2544, RFC2765, RFC2928, RFC3056,
+  RFC3068, RFC3171, RFC3330, RFC3849, RFC3927, RFC4038, RFC4193, RFC4291,
+  RFC4380, RFC4773, RFC4843, RFC5180, RFC5735, RFC5737, RFC6052, RFC6333,
+  RFC6598, RFC6666, RFC6890, and RFC7335.
