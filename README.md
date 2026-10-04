@@ -26,6 +26,75 @@ Known RFCs for IP addresses.
 iprfc = "0.2"
 ```
 
+## Scope and features
+
+`iprfc` is a `#![no_std]` crate with an MSRV of Rust 1.81. The default `std`
+feature enables `std` support in its dependencies; embedded and other `no_std`
+users can disable it:
+
+```toml
+[dependencies]
+iprfc = { version = "0.2", default-features = false }
+```
+
+The optional `serde` feature enables serialization and deserialization of
+`Filter` and the re-exported network types. It also works without `std`: combine
+`default-features = false` with `features = ["serde"]`.
+
+Named historical `RFCnnnn` constants are frozen representations of the address
+blocks described by those RFCs, not live IANA registries. The compatibility
+aggregate `RFC6890` is the intentional exception: it is generated from
+version-pinned, checked-in snapshots of IANA's continuously maintained IPv4
+and IPv6 Special-Purpose Address Space registries. The crate currently has 29
+named RFC entries. `RFCs::iter()` and `RFCs::len()` also include the
+compatibility pseudo-RFC `FORWARDING_BLACKLIST`, so `RFCs::len()` is currently
+30. This is a curated collection, not a claim to implement every address RFC
+or a live registry at runtime.
+
+`Filter` has an append-only bit layout: existing named RFC bits do not move and
+new known RFCs use unassigned bits. Unknown bits select no RFC in
+`RFCs::filter`, which iterates named flags only. Callers using APIs such as
+`Filter::from_bits_retain` may retain unknown bits, but they have no filtering
+effect until a named flag is defined for them. `RFCs::get_unchecked` keeps its
+existing compatibility name; it is memory-safe and panics when an identifier is
+missing.
+
+Public API changes follow SemVer. Corrections to factual RFC tables and a
+newer checked-in IANA snapshot can change membership in a patch release; pin
+an exact version when data stability matters. Any MSRV increase will be called
+out explicitly.
+
+## Registry snapshots and policy
+
+Do not treat a match, or its absence, as a current routing decision, firewall
+rule, SSRF defense, allowlist, denylist, or proof of global routability. Address
+families are not normalized: an IPv4-mapped IPv6 address remains IPv6 unless
+the caller explicitly normalizes it first.
+
+`RFC6890` and `FORWARDING_BLACKLIST` use reproducible snapshots of IANA's
+[IPv4 Special-Purpose Address Space](https://www.iana.org/assignments/iana-ipv4-special-registry/)
+and [IPv6 Special-Purpose Address Space](https://www.iana.org/assignments/iana-ipv6-special-registry/)
+registries. The updater deterministically generates the provenance record in
+[data/iana/README.md](data/iana/README.md) from the checked-in source bytes,
+IANA XML dates, and SHA-256 digests. The crate does not fetch data while
+building or running.
+
+`RFC6890` includes every source prefix, including deprecated and terminated
+rows. `FORWARDING_BLACKLIST` is a canonical, disjoint set whose membership is
+defined by the most-specific source row with `Forwardable = False`. A
+more-specific `True` row is an allow exception; blank or `N/A` is explicit
+unknown data and overrides a less-specific false parent rather than being
+guessed as false. In this snapshot, `192.0.0.8` is blocked while
+`192.0.0.9` and `192.0.0.10` are allowed; `3fff::/20` is present
+and blocked, while the terminated `2001:10::/28` is not blacklisted.
+
+A network query succeeds only when one listed CIDR entirely contains the
+queried network; adjacent entries are not combined into a union for network
+containment. Use `python3 scripts/update_iana_registry.py check` for an offline
+reproducibility check, `check-upstream` to read-only compare IANA, and `sync`
+to refresh the snapshot before a release. The repository's scheduled/manual
+CI drift check never writes commits, branches, or pull requests.
+
 ## Const Classifiers
 
 `iprfc` exposes const functions for common RFC address classes, so downstream
@@ -40,6 +109,11 @@ assert!(is_private_ip_addr(private));
 let documentation = "3fff::1".parse().unwrap();
 assert!(is_documentation_ip_addr(documentation));
 ```
+
+These semantic classifiers follow their separately cited RFCs rather than the
+IANA registry compatibility aggregate. In particular, IPv6 documentation
+classification includes both [RFC 3849](https://www.rfc-editor.org/rfc/rfc3849.html)
+and [RFC 9637](https://www.rfc-editor.org/rfc/rfc9637.html).
 
 ## Pedigree
 
@@ -60,4 +134,3 @@ Copyright (c) 2021 Al Liu.
 [crates-url]: https://crates.io/crates/iprfc
 [codecov-url]: https://app.codecov.io/gh/al8n/iprfc/
 [discord]: https://discord.gg/Pk5PKvpWQM
-

@@ -1,0 +1,5 @@
+# Preserve authoritative raw IANA XML bytes exactly, including upstream whitespace and line endings.
+data/iana/*.xml -text -whitespace
+# Keep deterministic generated text portable with LF line endings.
+src/iana_special_registry_data.rs text eol=lf
+data/iana/README.md text eol=lf

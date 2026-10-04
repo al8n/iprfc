@@ -13,15 +13,15 @@ keywords = ["ip", "networking", "rfc6890", "rfc"]
 
 [features]
 default = ["std"]
-std = ["ipnet/default", "bitflags/std"]
+std = ["ipnet/default", "bitflags/std", "serde?/std"]
 serde = ["dep:serde", "ipnet/serde", "bitflags/serde"]
 
 [dependencies]
 bitflags = { version = "2", default-features = false }
-paste = "1"
+pastey = "0.2"
 ipnet = { version = "2.12", default-features = false }
 
-serde = { version = "1", optional = true, features = ["derive"] }
+serde = { version = "1", default-features = false, optional = true, features = ["derive"] }
 
 [package.metadata.docs.rs]
 all-features = true

@@ -5,17 +5,13 @@ on:
     branches:
       - main
     paths-ignore:
-      - 'README'
       - 'COPYRIGHT'
       - 'LICENSE-*'
-      - '**.md'
       - '**.txt'
   pull_request:
     paths-ignore:
-      - 'README'
       - 'COPYRIGHT'
       - 'LICENSE-*'
-      - '**.md'
       - '**.txt'
   workflow_dispatch:
   schedule: 
@@ -29,6 +25,25 @@ env:
   stable: stable
 
 jobs:
+  registry-data:
+    name: registry data
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+    - name: Check checked-in registry generation
+      run: python3 scripts/update_iana_registry.py check
+    - name: Test registry updater
+      run: python3 -m unittest scripts/test_update_iana_registry.py
+
+  registry-upstream:
+    name: registry upstream drift
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+    - name: Read-only upstream registry drift check
+      run: python3 scripts/update_iana_registry.py check-upstream
+
   # Check formatting
   rustfmt:
     name: rustfmt
@@ -136,6 +151,34 @@ jobs:
     - name: Run test
       run: cargo test
 
+  compatibility:
+    name: compatibility
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+    - name: Install stable Rust
+      run: rustup update stable --no-self-update && rustup default stable
+    - name: Test stable feature combinations
+      run: |
+        cargo +stable test
+        cargo +stable test --no-default-features
+        cargo +stable test --no-default-features --features serde
+        cargo +stable test --all-features
+    - name: Install Rust 1.81
+      run: rustup toolchain install 1.81.0 --profile minimal
+    - name: Check Rust 1.81 all features
+      run: cargo +1.81.0 check --all-features
+    - name: Test Rust 1.81 all features
+      run: cargo +1.81.0 test --all-features --lib
+    - name: Doctest Rust 1.81 all features
+      run: cargo +1.81.0 test --all-features --doc
+    - name: Add bare-metal target
+      run: rustup target add thumbv7em-none-eabihf --toolchain stable
+    - name: Check bare-metal feature combinations
+      run: |
+        cargo +stable check --target thumbv7em-none-eabihf --no-default-features
+        cargo +stable check --target thumbv7em-none-eabihf --no-default-features --features serde
+
   coverage:
     name: coverage
     runs-on: ubuntu-latest
@@ -144,17 +187,14 @@ jobs:
       - clippy
       - build
       - test
+      - compatibility
+      - registry-data
     steps:
       - uses: actions/checkout@v7
-      - name: Install latest nightly
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          override: true
-      - uses: actions-rs/install@v0.1
-        with:
-          crate: cargo-tarpaulin
-          version: latest
+      - name: Install nightly with cargo-llvm-cov
+        run: rustup toolchain install nightly --profile minimal --component llvm-tools-preview
+      - name: Install cargo-llvm-cov
+        run: cargo +nightly install cargo-llvm-cov --locked
       - name: Cache ~/.cargo
         uses: actions/cache@v6
         with:
@@ -164,17 +204,16 @@ jobs:
         uses: actions/cache@v6
         with:
           path: target
-          key: ${{ runner.os }}-coverage-cargo-build-target
-      - name: Run tarpaulin
-        uses: actions-rs/cargo@v1
-        env:
-          RUSTFLAGS: "--cfg all_tests"
-        with:
-          command: tarpaulin
-          args: --engine llvm --all-features --run-types lib --run-types tests --run-types doctests --workspace --out xml
+          key: ${{ runner.os }}-llvm-cov-v1-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+      - name: Run cargo-llvm-cov
+        run: |
+          mkdir -p target/coverage
+          cargo +nightly llvm-cov --all-features --workspace --doctests --cobertura --output-path target/coverage/cobertura.xml
       - name: Upload to codecov.io
         uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: ${{ github.repository }}
           fail_ci_if_error: true
+          files: target/coverage/cobertura.xml
+          disable_search: true

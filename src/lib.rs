@@ -16,11 +16,12 @@ pub use forwarding_black_list::{FORWARDING_BLACKLIST, FORWARDING_BLACKLIST_ID};
 pub use semantic::*;
 
 mod forwarding_black_list;
+mod iana_special_registry_data;
 mod semantic;
 
 macro_rules! rfcs {
   ($(($index:literal, $id:literal)), +$(,)?) => {
-    paste::paste! {
+    pastey::paste! {
       $(
         pub use [<rfc $id>]::[< RFC $id >];
       )+
@@ -47,6 +48,17 @@ macro_rules! rfcs {
         $([<RFC $id>]),+,
         FORWARDING_BLACKLIST
       ];
+
+      #[inline]
+      fn rfc_for_filter_bit(filter: Filter) -> Option<&'static RFC> {
+        match filter.bits() {
+          $(
+            bit if bit == 1u128 << $index => Some(&RFCS[$index]),
+          )+
+          bit if bit == 1u128 << 127 => RFCS.last(),
+          _ => None,
+        }
+      }
 
       impl ::core::ops::Index<u32> for RFCs {
         type Output = RFC;
@@ -78,7 +90,7 @@ macro_rules! rfcs {
             $(
               stringify!($id) => &RFCS[$index],
             )+
-            "blacklist" | "BLACKLIST" | "blocked" | "BLOCKED" => RFCS.last().unwrap(),
+            "4294967295" | "blacklist" | "BLACKLIST" | "blocked" | "BLOCKED" => RFCS.last().unwrap(),
             val if val == stringify!(FORWARDING_BLACKLIST_ID) => RFCS.last().unwrap(),
             val => panic!("{val} is not a valid RFC identifier"),
           }
@@ -238,7 +250,10 @@ impl Subset {
   where
     RFC: Contains<T>,
   {
-    self.0.iter_names().any(|(n, _)| RFCs[n].contains(ip))
+    self
+      .0
+      .iter_names()
+      .any(|(_, filter)| rfc_for_filter_bit(filter).is_some_and(|rfc| rfc.contains(ip)))
   }
 }
 
@@ -488,10 +503,102 @@ fn test_indexable_by_str() {
 
   let rfc = RFCs["blacklist"];
   assert_eq!(rfc.id(), FORWARDING_BLACKLIST_ID);
+
+  let rfc = RFCs["4294967295"];
+  assert_eq!(rfc.id(), FORWARDING_BLACKLIST_ID);
+
+  let rfc = RFCs["FORWARDING_BLACKLIST_ID"];
+  assert_eq!(rfc.id(), FORWARDING_BLACKLIST_ID);
 }
 
 #[test]
 #[should_panic]
 fn test_indexable_by_str_panic() {
   let _ = RFCs["9999"];
+}
+
+#[test]
+#[should_panic]
+fn test_indexable_by_invalid_numeric_str_panic() {
+  let _ = RFCs["4294967294"];
+}
+
+#[test]
+fn test_subset_contains_named_filters_and_ignores_unnamed_bits() {
+  let blacklist = RFCs::filter(Filter::FORWARDING_BLACKLIST);
+  assert!(blacklist.contains(&Ipv4Addr::new(0, 0, 0, 0)));
+
+  let mixed = RFCs::filter(Filter::RFC1918 | Filter::FORWARDING_BLACKLIST);
+  assert!(mixed.contains(&Ipv4Addr::new(10, 0, 0, 1)));
+  assert!(mixed.contains(&Ipv4Addr::new(0, 0, 0, 0)));
+
+  let all = RFCs::filter(Filter::all());
+  assert!(all.contains(&Ipv4Addr::new(203, 0, 113, 1)));
+  assert!(!all.contains(&Ipv4Addr::new(8, 8, 8, 8)));
+
+  let unknown = RFCs::filter(Filter::from_bits_retain(1u128 << 29));
+  assert!(!unknown.contains(&Ipv4Addr::new(0, 0, 0, 0)));
+}
+
+#[test]
+fn test_filter_bit_positions_and_rfc_order_are_stable() {
+  let expected = [
+    (Filter::RFC919, 1u128 << 0, 919),
+    (Filter::RFC1112, 1u128 << 1, 1112),
+    (Filter::RFC1122, 1u128 << 2, 1122),
+    (Filter::RFC1918, 1u128 << 3, 1918),
+    (Filter::RFC2544, 1u128 << 4, 2544),
+    (Filter::RFC2765, 1u128 << 5, 2765),
+    (Filter::RFC2928, 1u128 << 6, 2928),
+    (Filter::RFC3056, 1u128 << 7, 3056),
+    (Filter::RFC3068, 1u128 << 8, 3068),
+    (Filter::RFC3171, 1u128 << 9, 3171),
+    (Filter::RFC3330, 1u128 << 10, 3330),
+    (Filter::RFC3849, 1u128 << 11, 3849),
+    (Filter::RFC3927, 1u128 << 12, 3927),
+    (Filter::RFC4038, 1u128 << 13, 4038),
+    (Filter::RFC4193, 1u128 << 14, 4193),
+    (Filter::RFC4291, 1u128 << 15, 4291),
+    (Filter::RFC4380, 1u128 << 16, 4380),
+    (Filter::RFC4773, 1u128 << 17, 4773),
+    (Filter::RFC4843, 1u128 << 18, 4843),
+    (Filter::RFC5180, 1u128 << 19, 5180),
+    (Filter::RFC5735, 1u128 << 20, 5735),
+    (Filter::RFC5737, 1u128 << 21, 5737),
+    (Filter::RFC6052, 1u128 << 22, 6052),
+    (Filter::RFC6333, 1u128 << 23, 6333),
+    (Filter::RFC6598, 1u128 << 24, 6598),
+    (Filter::RFC6666, 1u128 << 25, 6666),
+    (Filter::RFC6890, 1u128 << 26, 6890),
+    (Filter::RFC7335, 1u128 << 27, 7335),
+    (Filter::RFC9637, 1u128 << 28, 9637),
+    (
+      Filter::FORWARDING_BLACKLIST,
+      1u128 << 127,
+      FORWARDING_BLACKLIST_ID,
+    ),
+  ];
+
+  assert_eq!(RFCs::len(), expected.len());
+  for (&(filter, bit, id), rfc) in expected.iter().zip(RFCs::iter()) {
+    assert_eq!(filter.bits(), bit);
+    assert_eq!(rfc.id(), id);
+    assert!(RFCs::contains(id));
+    assert_eq!(RFCs::get(id), Some(rfc));
+    assert_eq!(RFCs::get_unchecked(id), rfc);
+    assert_eq!(RFCs[id], *rfc);
+
+    let decimal_id_string = std::format!("{id}");
+    assert_eq!(RFCs[decimal_id_string.as_str()], *rfc);
+    assert_eq!(rfc_for_filter_bit(filter), Some(rfc));
+  }
+
+  assert_eq!(rfc_for_filter_bit(Filter::empty()), None);
+  assert_eq!(
+    rfc_for_filter_bit(Filter::from_bits_retain(1u128 << 29)),
+    None
+  );
+  assert_eq!(rfc_for_filter_bit(Filter::RFC919 | Filter::RFC1112), None);
+  assert!(!RFCs::contains(9999));
+  assert!(RFCs::get(9999).is_none());
 }
