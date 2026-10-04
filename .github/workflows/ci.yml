@@ -25,6 +25,25 @@ env:
   stable: stable
 
 jobs:
+  registry-data:
+    name: registry data
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+    - name: Check checked-in registry generation
+      run: python3 scripts/update_iana_registry.py check
+    - name: Test registry updater
+      run: python3 -m unittest scripts/test_update_iana_registry.py
+
+  registry-upstream:
+    name: registry upstream drift
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+    - name: Read-only upstream registry drift check
+      run: python3 scripts/update_iana_registry.py check-upstream
+
   # Check formatting
   rustfmt:
     name: rustfmt
@@ -169,6 +188,7 @@ jobs:
       - build
       - test
       - compatibility
+      - registry-data
     steps:
       - uses: actions/checkout@v7
       - name: Install latest nightly

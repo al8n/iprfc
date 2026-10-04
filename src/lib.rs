@@ -16,11 +16,12 @@ pub use forwarding_black_list::{FORWARDING_BLACKLIST, FORWARDING_BLACKLIST_ID};
 pub use semantic::*;
 
 mod forwarding_black_list;
+mod iana_special_registry_data;
 mod semantic;
 
 macro_rules! rfcs {
   ($(($index:literal, $id:literal)), +$(,)?) => {
-    paste::paste! {
+    pastey::paste! {
       $(
         pub use [<rfc $id>]::[< RFC $id >];
       )+

@@ -7,16 +7,18 @@
   filter bit positions and RFC iteration order.
 - Complete RFC 5735's 15-row table, include both mapped and translated IPv6
   prefixes from RFC 2765, and narrow RFC 3068's IPv6 anycast address to `/128`.
-- Repair the historical RFC 6890 forwarding blacklist: apply the document's
-  more-specific forwardable exceptions and store the result as canonical,
-  disjoint CIDRs.
+- Replace the RFC6890 compatibility aggregate and forwarding blacklist with
+  version-pinned, checked-in IANA Special-Purpose Address Space snapshots.
+  The blacklist uses each most-specific `Forwardable` value, including
+  explicit unknown holes, and is generated as canonical disjoint CIDRs.
 - Complete the historical RFC 3330 September 2002 summary table and clarify
-  that RFC table constants are document snapshots rather than current IANA
-  policy.
+  that named historical RFC table constants remain document snapshots; RFC6890
+  is the explicit IANA-registry compatibility exception.
 - Clarify compatibility behavior for `Filter`, `RFCs`, and factual RFC-table
   corrections.
 - Support `serde` without `std`, test stable feature combinations, Rust 1.81,
   and bare-metal builds in CI, and replace obsolete coverage actions.
+- Replace the unmaintained `paste` dependency with `pastey` 0.2.
 
 ## Released
 
