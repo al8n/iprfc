@@ -164,12 +164,16 @@ jobs:
         cargo +stable test --no-default-features
         cargo +stable test --no-default-features --features serde
         cargo +stable test --all-features
+    - name: Deny rustdoc warnings
+      run: RUSTDOCFLAGS=-Dwarnings cargo +stable doc --all-features --no-deps
+    - name: Check package
+      run: cargo +stable package
     - name: Install Rust 1.81
       run: rustup toolchain install 1.81.0 --profile minimal
     - name: Check Rust 1.81 all features
       run: cargo +1.81.0 check --all-features
     - name: Test Rust 1.81 all features
-      run: cargo +1.81.0 test --all-features --lib
+      run: cargo +1.81.0 test --all-features --all-targets
     - name: Doctest Rust 1.81 all features
       run: cargo +1.81.0 test --all-features --doc
     - name: Add bare-metal target
