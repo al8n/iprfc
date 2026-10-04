@@ -191,10 +191,10 @@ jobs:
       - registry-data
     steps:
       - uses: actions/checkout@v7
-      - name: Install latest nightly
-        run: rustup toolchain install nightly --profile minimal
-      - name: Install cargo-tarpaulin
-        run: cargo +nightly install cargo-tarpaulin --locked
+      - name: Install nightly with cargo-llvm-cov
+        run: rustup toolchain install nightly --profile minimal --component llvm-tools-preview
+      - name: Install cargo-llvm-cov
+        run: cargo +nightly install cargo-llvm-cov --locked
       - name: Cache ~/.cargo
         uses: actions/cache@v6
         with:
@@ -204,12 +204,14 @@ jobs:
         uses: actions/cache@v6
         with:
           path: target
-          key: ${{ runner.os }}-coverage-cargo-build-target
-      - name: Run tarpaulin
-        run: cargo +nightly tarpaulin --engine llvm --all-features --run-types lib --run-types tests --run-types doctests --workspace --out xml
+          key: ${{ runner.os }}-llvm-cov-v1-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+      - name: Run cargo-llvm-cov
+        run: cargo +nightly llvm-cov --all-features --workspace --doctests --cobertura --output-path target/coverage/cobertura.xml
       - name: Upload to codecov.io
         uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: ${{ github.repository }}
           fail_ci_if_error: true
+          files: target/coverage/cobertura.xml
+          disable_search: true

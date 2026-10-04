@@ -542,76 +542,63 @@ fn test_subset_contains_named_filters_and_ignores_unnamed_bits() {
 
 #[test]
 fn test_filter_bit_positions_and_rfc_order_are_stable() {
-  for (filter, bit) in [
-    (Filter::RFC919, 1u128 << 0),
-    (Filter::RFC1112, 1u128 << 1),
-    (Filter::RFC1122, 1u128 << 2),
-    (Filter::RFC1918, 1u128 << 3),
-    (Filter::RFC2544, 1u128 << 4),
-    (Filter::RFC2765, 1u128 << 5),
-    (Filter::RFC2928, 1u128 << 6),
-    (Filter::RFC3056, 1u128 << 7),
-    (Filter::RFC3068, 1u128 << 8),
-    (Filter::RFC3171, 1u128 << 9),
-    (Filter::RFC3330, 1u128 << 10),
-    (Filter::RFC3849, 1u128 << 11),
-    (Filter::RFC3927, 1u128 << 12),
-    (Filter::RFC4038, 1u128 << 13),
-    (Filter::RFC4193, 1u128 << 14),
-    (Filter::RFC4291, 1u128 << 15),
-    (Filter::RFC4380, 1u128 << 16),
-    (Filter::RFC4773, 1u128 << 17),
-    (Filter::RFC4843, 1u128 << 18),
-    (Filter::RFC5180, 1u128 << 19),
-    (Filter::RFC5735, 1u128 << 20),
-    (Filter::RFC5737, 1u128 << 21),
-    (Filter::RFC6052, 1u128 << 22),
-    (Filter::RFC6333, 1u128 << 23),
-    (Filter::RFC6598, 1u128 << 24),
-    (Filter::RFC6666, 1u128 << 25),
-    (Filter::RFC6890, 1u128 << 26),
-    (Filter::RFC7335, 1u128 << 27),
-    (Filter::RFC9637, 1u128 << 28),
-    (Filter::FORWARDING_BLACKLIST, 1u128 << 127),
-  ] {
-    assert_eq!(filter.bits(), bit);
-  }
-
-  let expected_ids = [
-    919,
-    1112,
-    1122,
-    1918,
-    2544,
-    2765,
-    2928,
-    3056,
-    3068,
-    3171,
-    3330,
-    3849,
-    3927,
-    4038,
-    4193,
-    4291,
-    4380,
-    4773,
-    4843,
-    5180,
-    5735,
-    5737,
-    6052,
-    6333,
-    6598,
-    6666,
-    6890,
-    7335,
-    9637,
-    FORWARDING_BLACKLIST_ID,
+  let expected = [
+    (Filter::RFC919, 1u128 << 0, 919),
+    (Filter::RFC1112, 1u128 << 1, 1112),
+    (Filter::RFC1122, 1u128 << 2, 1122),
+    (Filter::RFC1918, 1u128 << 3, 1918),
+    (Filter::RFC2544, 1u128 << 4, 2544),
+    (Filter::RFC2765, 1u128 << 5, 2765),
+    (Filter::RFC2928, 1u128 << 6, 2928),
+    (Filter::RFC3056, 1u128 << 7, 3056),
+    (Filter::RFC3068, 1u128 << 8, 3068),
+    (Filter::RFC3171, 1u128 << 9, 3171),
+    (Filter::RFC3330, 1u128 << 10, 3330),
+    (Filter::RFC3849, 1u128 << 11, 3849),
+    (Filter::RFC3927, 1u128 << 12, 3927),
+    (Filter::RFC4038, 1u128 << 13, 4038),
+    (Filter::RFC4193, 1u128 << 14, 4193),
+    (Filter::RFC4291, 1u128 << 15, 4291),
+    (Filter::RFC4380, 1u128 << 16, 4380),
+    (Filter::RFC4773, 1u128 << 17, 4773),
+    (Filter::RFC4843, 1u128 << 18, 4843),
+    (Filter::RFC5180, 1u128 << 19, 5180),
+    (Filter::RFC5735, 1u128 << 20, 5735),
+    (Filter::RFC5737, 1u128 << 21, 5737),
+    (Filter::RFC6052, 1u128 << 22, 6052),
+    (Filter::RFC6333, 1u128 << 23, 6333),
+    (Filter::RFC6598, 1u128 << 24, 6598),
+    (Filter::RFC6666, 1u128 << 25, 6666),
+    (Filter::RFC6890, 1u128 << 26, 6890),
+    (Filter::RFC7335, 1u128 << 27, 7335),
+    (Filter::RFC9637, 1u128 << 28, 9637),
+    (
+      Filter::FORWARDING_BLACKLIST,
+      1u128 << 127,
+      FORWARDING_BLACKLIST_ID,
+    ),
   ];
 
-  assert_eq!(RFCs::len(), expected_ids.len());
-  for (rfc, id) in RFCs::iter().zip(expected_ids) {
+  assert_eq!(RFCs::len(), expected.len());
+  for (&(filter, bit, id), rfc) in expected.iter().zip(RFCs::iter()) {
+    assert_eq!(filter.bits(), bit);
     assert_eq!(rfc.id(), id);
+    assert!(RFCs::contains(id));
+    assert_eq!(RFCs::get(id), Some(rfc));
+    assert_eq!(RFCs::get_unchecked(id), rfc);
+    assert_eq!(RFCs[id], *rfc);
+
+    let decimal_id_string = std::format!("{id}");
+    assert_eq!(RFCs[decimal_id_string.as_str()], *rfc);
+    assert_eq!(rfc_for_filter_bit(filter), Some(rfc));
   }
+
+  assert_eq!(rfc_for_filter_bit(Filter::empty()), None);
+  assert_eq!(
+    rfc_for_filter_bit(Filter::from_bits_retain(1u128 << 29)),
+    None
+  );
+  assert_eq!(rfc_for_filter_bit(Filter::RFC919 | Filter::RFC1112), None);
+  assert!(!RFCs::contains(9999));
+  assert!(RFCs::get(9999).is_none());
 }
