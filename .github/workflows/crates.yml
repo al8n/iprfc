@@ -26,6 +26,7 @@ jobs:
     outputs:
       release_lock_sha256: ${{ steps.release_lock.outputs.sha256 }}
       release_crate_sha256: ${{ steps.release_crate.outputs.sha256 }}
+      rust_toolchain: ${{ steps.release_toolchain.outputs.toolchain }}
       rustc_version: ${{ steps.release_toolchain.outputs.rustc }}
       cargo_version: ${{ steps.release_toolchain.outputs.cargo }}
     steps:
@@ -41,8 +42,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          echo "rustc=$(rustc +stable --version)" >> "$GITHUB_OUTPUT"
-          echo "cargo=$(cargo +stable --version)" >> "$GITHUB_OUTPUT"
+          rustc_verbose="$(rustc +stable --version --verbose)"
+          release="$(sed -n 's/^release: //p' <<< "$rustc_verbose")"
+          host="$(sed -n 's/^host: //p' <<< "$rustc_verbose")"
+          [[ "$release" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          test "$host" = "x86_64-unknown-linux-gnu"
+          {
+            echo "toolchain=$release-$host"
+            echo "rustc=$(rustc +stable --version)"
+            echo "cargo=$(cargo +stable --version)"
+          } >> "$GITHUB_OUTPUT"
       - name: Test release metadata gate
         run: python3 -m unittest scripts/test_check_release_version.py
       - name: Verify release metadata
@@ -138,16 +147,30 @@ jobs:
         with:
           name: iprfc-release-lock-${{ github.sha }}
           path: .
-      - name: Verify release identity and lock
+      - name: Install verified release toolchain
         shell: bash
         env:
-          EXPECTED_LOCK_SHA256: ${{ needs.verify.outputs.release_lock_sha256 }}
+          EXPECTED_TOOLCHAIN: ${{ needs.verify.outputs.rust_toolchain }}
           EXPECTED_RUSTC_VERSION: ${{ needs.verify.outputs.rustc_version }}
           EXPECTED_CARGO_VERSION: ${{ needs.verify.outputs.cargo_version }}
         run: |
           set -euo pipefail
-          test "$(rustc +stable --version)" = "$EXPECTED_RUSTC_VERSION"
-          test "$(cargo +stable --version)" = "$EXPECTED_CARGO_VERSION"
+          [[ "$EXPECTED_TOOLCHAIN" =~ ^[0-9]+\.[0-9]+\.[0-9]+-x86_64-unknown-linux-gnu$ ]]
+          rustup toolchain install "$EXPECTED_TOOLCHAIN" --profile minimal
+          test "$(rustc +"$EXPECTED_TOOLCHAIN" --version)" = "$EXPECTED_RUSTC_VERSION"
+          test "$(cargo +"$EXPECTED_TOOLCHAIN" --version)" = "$EXPECTED_CARGO_VERSION"
+      - name: Verify release identity and lock
+        shell: bash
+        env:
+          EXPECTED_LOCK_SHA256: ${{ needs.verify.outputs.release_lock_sha256 }}
+          EXPECTED_TOOLCHAIN: ${{ needs.verify.outputs.rust_toolchain }}
+          EXPECTED_RUSTC_VERSION: ${{ needs.verify.outputs.rustc_version }}
+          EXPECTED_CARGO_VERSION: ${{ needs.verify.outputs.cargo_version }}
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_TOOLCHAIN" =~ ^[0-9]+\.[0-9]+\.[0-9]+-x86_64-unknown-linux-gnu$ ]]
+          test "$(rustc +"$EXPECTED_TOOLCHAIN" --version)" = "$EXPECTED_RUSTC_VERSION"
+          test "$(cargo +"$EXPECTED_TOOLCHAIN" --version)" = "$EXPECTED_CARGO_VERSION"
           tag_ref="refs/tags/$GITHUB_REF_NAME"
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           test "$(git cat-file -t "$tag_ref")" = "tag"
@@ -164,13 +187,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(rustc +stable --version)" = "$EXPECTED_RUSTC_VERSION"
-          test "$(cargo +stable --version)" = "$EXPECTED_CARGO_VERSION"
+          [[ "$EXPECTED_TOOLCHAIN" =~ ^[0-9]+\.[0-9]+\.[0-9]+-x86_64-unknown-linux-gnu$ ]]
+          test "$(rustc +"$EXPECTED_TOOLCHAIN" --version)" = "$EXPECTED_RUSTC_VERSION"
+          test "$(cargo +"$EXPECTED_TOOLCHAIN" --version)" = "$EXPECTED_CARGO_VERSION"
           test "$(sha256sum Cargo.lock | cut -d ' ' -f1)" = "$EXPECTED_LOCK_SHA256"
           test -z "$(git status --porcelain)"
-          cargo +stable publish --locked --package iprfc --registry crates-io --all-features
+          cargo +"$EXPECTED_TOOLCHAIN" publish --locked --package iprfc --registry crates-io --all-features
         env:
           EXPECTED_LOCK_SHA256: ${{ needs.verify.outputs.release_lock_sha256 }}
+          EXPECTED_TOOLCHAIN: ${{ needs.verify.outputs.rust_toolchain }}
           EXPECTED_RUSTC_VERSION: ${{ needs.verify.outputs.rustc_version }}
           EXPECTED_CARGO_VERSION: ${{ needs.verify.outputs.cargo_version }}
           CARGO_REGISTRY_TOKEN: ${{ steps.crates-io-auth.outputs.token }}

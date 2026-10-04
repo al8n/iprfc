@@ -99,13 +99,17 @@ repository lockfile policy remains unchanged.
 
 `id-token: write` applies to the entire publish job, not only the authentication
 step. That job therefore contains only immutable-pinned checkout and artifact
-actions, fixed identity checks, the immutable-pinned crates.io authentication
-action, and the final publish command. Cargo's required publish verification
-still executes the locked dependency graph while OIDC permission and the
-ephemeral registry token are available. This residual supply-chain exposure is
-accepted for Cargo's standard verified publish path and is mitigated by the
-unprivileged lock/test/package/dry-run job plus the required human environment
-review.
+actions, exact Rust toolchain installation, fixed identity checks, the
+immutable-pinned crates.io authentication action, and the final publish command.
+Before authentication, the job installs the exact release and host tuple recorded
+by the verify job and confirms the exact `rustc` and `cargo` versions. Rustup
+relies on HTTPS and checksums for these downloads, not artifact signatures, so
+that network step is part of the accepted job-wide OIDC trust boundary. Cargo's
+required publish verification still executes the locked dependency graph while
+OIDC permission and the ephemeral registry token are available. This residual
+supply-chain exposure is accepted for Cargo's standard verified publish path and
+is mitigated by the unprivileged lock/test/package/dry-run job plus the required
+human environment review.
 
 ## Publish requires authorization
 
