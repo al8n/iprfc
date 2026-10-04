@@ -206,7 +206,9 @@ jobs:
           path: target
           key: ${{ runner.os }}-llvm-cov-v1-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
       - name: Run cargo-llvm-cov
-        run: cargo +nightly llvm-cov --all-features --workspace --doctests --cobertura --output-path target/coverage/cobertura.xml
+        run: |
+          mkdir -p target/coverage
+          cargo +nightly llvm-cov --all-features --workspace --doctests --cobertura --output-path target/coverage/cobertura.xml
       - name: Upload to codecov.io
         uses: codecov/codecov-action@v7
         with:
